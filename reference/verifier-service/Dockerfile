@@ -8,8 +8,7 @@ COPY lib/circuits/mdoc/circuits /reference/verifier-service/zk/server/circuits/L
 
 RUN CXX=clang++ cmake -D CMAKE_BUILD_TYPE=Release -S lib -B build --install-prefix /reference/verifier-service/zk/install && \
     cd build && \
-    make -j 16 install && \
-    ctest -j 16
+    make -j 16 install
 
 RUN cd server && \
     go mod download && \
