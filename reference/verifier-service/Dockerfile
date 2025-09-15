@@ -11,10 +11,10 @@ RUN CXX=clang++ cmake -D CMAKE_BUILD_TYPE=Release -S lib -B build --install-pref
     make -j 16 install && \
     ctest -j 16
 
-# RUN cd server && \
-#     go mod download && \
-#     go build && \
-#     cd zk && go test -v
+RUN cd server && \
+    go mod download && \
+    go build && \
+    cd zk
 
 # Stage 2: Create a runtime image without dev
 FROM golang:latest
