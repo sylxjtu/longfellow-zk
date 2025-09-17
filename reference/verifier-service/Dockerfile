@@ -22,4 +22,5 @@ RUN apt update -y && apt install -y libssl3 libzstd1 zlib1g
 COPY --from=builder /reference/verifier-service/zk/server/circuits /reference/verifier-service/zk/circuits/
 COPY --from=builder /reference/verifier-service/zk/server/server /reference/verifier-service/zk
 COPY --from=builder /reference/verifier-service/zk/server/certs.pem /reference/verifier-service/zk
+COPY --from=builder /reference/verifier-service/zk/server/present.html /reference/verifier-service/zk/
 ENTRYPOINT ["/reference/verifier-service/zk/server"]
