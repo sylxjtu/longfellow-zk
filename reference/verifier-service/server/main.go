@@ -82,6 +82,7 @@ func main() {
 	mux.HandleFunc("/zkverify", makeHTTPHandleFunc(server.handleZKVerify))
 	mux.HandleFunc("/specs", makeHTTPHandleFunc(server.handleGetZKSpecs))
 	mux.HandleFunc("/healthz", server.healthzHandler)
+	mux.HandleFunc("/present", server.handlePresent)
 
 	srv := &http.Server{
 		Addr:    server.listenAddr,

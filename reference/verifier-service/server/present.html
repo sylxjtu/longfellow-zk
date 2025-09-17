@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Present VP Token</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        pre { background-color: #f4f4f4; padding: 1em; border-radius: 5px; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Upload VP Token to send to /zkverify</h2>
+    <input type="file" id="vpTokenFile" accept=".json"/>
+    <h3>Response from /zkverify:</h3>
+    <pre id="response"></pre>
+    <div id="error"></div>
+    <script>
+        document.getElementById('vpTokenFile').addEventListener('change', handleFileSelect, false);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileContent = e.target.result;
+                try {
+                    const data = JSON.parse(fileContent);
+                    const ageCredential = data.vp_token.age_credential;
+
+                    // The ZKDeviceResponseCBOR must be standard base64, but the input is URL-safe base64.
+                    // Convert from URL-safe base64 to standard base64.
+                    let stdBase64 = ageCredential.replace(/-/g, '+').replace(/_/g, '/');
+                    while (stdBase64.length % 4) {
+                        stdBase64 += '=';
+                    }
+
+                    const payload = {
+                        "Transcript": "g/b2gnZPcGVuSUQ0VlBEQ0FQSUhhbmRvdmVyWCCxjRR3VLLe36CQNEWFL6PK3mNMLSUjUg46EC3xeHx1xA==",
+                        "ZKDeviceResponseCBOR": stdBase64,
+                    };
+
+                    fetch('/zkverify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+                        document.getElementById('error').textContent = '';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('error').textContent = 'Error during verification: ' + error;
+                        document.getElementById('response').textContent = '';
+                    });
+                } catch (error) {
+                    console.error('Error parsing JSON or processing file:', error);
+                    document.getElementById('error').textContent = 'Error parsing JSON or processing file: ' + error;
+                    document.getElementById('response').textContent = '';
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>

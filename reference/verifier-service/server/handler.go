@@ -101,6 +101,14 @@ func (s *Server) handleGetZKSpecs(w http.ResponseWriter, r *http.Request) error 
 	return writeJSON(w, http.StatusOK, specs)
 }
 
+func (s *Server) handlePresent(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		writeJSON(w, http.StatusMethodNotAllowed, APIError{Error: "expecting a get request"})
+		return
+	}
+	http.ServeFile(w, r, "present.html")
+}
+
 func writeJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
