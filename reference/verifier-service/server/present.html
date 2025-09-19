@@ -11,9 +11,11 @@
 <body>
     <h2>Upload VP Token to send to /zkverify</h2>
     <input type="file" id="vpTokenFile" accept=".json"/>
+    <input id="transcript" value="g/b2gnZPcGVuSUQ0VlBEQ0FQSUhhbmRvdmVyWCBYIpbfqbM0wrZ15IEibDHoDpkoYdGC0BZvesdD/CW0dg==" style="width: 400px;"/>
     <h3>Response from /zkverify:</h3>
     <pre id="response"></pre>
     <div id="error"></div>
+
     <script>
         document.getElementById('vpTokenFile').addEventListener('change', handleFileSelect, false);
 
@@ -37,7 +39,7 @@
                     }
 
                     const payload = {
-                        "Transcript": "g/b2gnZPcGVuSUQ0VlBEQ0FQSUhhbmRvdmVyWCCxjRR3VLLe36CQNEWFL6PK3mNMLSUjUg46EC3xeHx1xA==",
+                        "Transcript": document.getElementById("transcript").value,
                         "ZKDeviceResponseCBOR": stdBase64,
                     };
 
@@ -48,7 +50,12 @@
                         },
                         body: JSON.stringify(payload)
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                             throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         document.getElementById('response').textContent = JSON.stringify(data, null, 2);
                         document.getElementById('error').textContent = '';
